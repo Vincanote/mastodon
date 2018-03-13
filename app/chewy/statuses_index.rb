@@ -18,27 +18,41 @@ class StatusesIndex < Chewy::Index
     },
     tokenizer: {
       ja_tokenizer: {
-        type: 'kuromoji_tokenizer',
+        type: 'kuromoji_neologd_tokenizer',
         mode: 'search',
+      },
+      ngram_tokenizer: {
+        type: 'ngram',
+        min_gram: 2,
+        max_gram: 3,
+        token_chars: %w(
+          letter
+          digit
+        ),
       },
     },
     analyzer: {
       content: {
-        tokenizer: 'ja_tokenizer',
+        tokenizer: 'kuromoji_neologd_tokenizer',
+        char_filter: %w(
+          icu_normalizer
+          kuromoji_neologd_iteration_mark
+        ),
         filter: %w(
-          kuromoji_baseform
-          kuromoji_part_of_speech
+          kuromoji_neologd_baseform
+          kuromoji_neologd_part_of_speech
           ja_stop
           kuromoji_number
-          kuromoji_stemmer
-          english_possessive_stemmer
-          english_stop
-          english_stemmer
+          kuromoji_neologd_stemmer
           icu_normalizer
         ),
       },
-      ja_default_analyzer: {
-        tokenizer: 'kuromoji_tokenizer',
+      ngram_analyzer: {
+        tokenizer: 'ngram_tokenizer',
+        char_filter: %w(
+          icu_normalizer
+        ),
+
       }
     },
   }
@@ -63,7 +77,7 @@ class StatusesIndex < Chewy::Index
       field :id, type: 'long'
       field :account_id, type: 'long'
 
-      field :text, type: 'text', analyzer: 'ja_default_analyzer', value: ->(status) { [status.spoiler_text, Formatter.instance.plaintext(status)].concat(status.media_attachments.map(&:description)).join("\n\n") } do
+      field :text, type: 'text', analyzer: 'ngram_analyzer', value: ->(status) { [status.spoiler_text, Formatter.instance.plaintext(status)].concat(status.media_attachments.map(&:description)).join("\n\n") } do
         field :stemmed, type: 'text', analyzer: 'content'
       end
 
