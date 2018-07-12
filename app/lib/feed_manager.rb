@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'singleton'
+require 'nkf'
 
 class FeedManager
   include Singleton
@@ -204,13 +205,14 @@ class FeedManager
     active_filters.select! { |filter| filter.context.include?(context.to_s) && !filter.expired? }
 
     active_filters.map! do |filter|
+      phrase = normalize(filter.phrase)
       if filter.whole_word
-        sb = filter.phrase =~ /\A[[:word:]]/ ? '\b' : ''
-        eb = filter.phrase =~ /[[:word:]]\z/ ? '\b' : ''
+        sb = phrase =~ /\A[[:word:]]/ ? '\b' : ''
+        eb = phrase =~ /[[:word:]]\z/ ? '\b' : ''
 
-        /(?mix:#{sb}#{Regexp.escape(filter.phrase)}#{eb})/
+        /(?mix:#{sb}#{Regexp.escape(phrase)}#{eb})/
       else
-        /#{Regexp.escape(filter.phrase)}/i
+        /#{Regexp.escape(phrase)}/i
       end
     end
 
@@ -219,10 +221,14 @@ class FeedManager
     combined_regex = active_filters.reduce { |memo, obj| Regexp.union(memo, obj) }
     status         = status.reblog if status.reblog?
 
-    !combined_regex.match(Formatter.instance.plaintext(status)).nil? ||
-      (status.spoiler_text.present? && !combined_regex.match(status.spoiler_text).nil?)
+    !combined_regex.match(normalize(Formatter.instance.plaintext(status))).nil? ||
+      (status.spoiler_text.present? && !combined_regex.match(normalize(status.spoiler_text)).nil?)
   end
 
+  def normalize(str)
+    NKF::nkf('-wm0Z0Z1', str)
+  end
+  
   # Adds a status to an account's feed, returning true if a status was
   # added, and false if it was not added to the feed. Note that this is
   # an internal helper: callers must call trim or push updates if

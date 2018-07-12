@@ -56,7 +56,7 @@ export function updateNotifications(notification, intlMessages, intlLocale) {
         return;
       }
 
-      filtered = regex && regex.test(searchIndex);
+      filtered = regex && regex.test(normalize(searchIndex));
     }
 
     if (showInColumn) {

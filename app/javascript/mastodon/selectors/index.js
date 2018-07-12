@@ -41,13 +41,39 @@ export const getFilters = (state, { contextType }) => state.get('filters', Immut
 const escapeRegExp = string =>
   string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 
+const kanaConvertMap = new Map([
+    ["ｧ", "ァ"], ["ｱ", "ア"], ["ｨ", "ィ"], ["ｲ", "イ"], ["ｩ", "ゥ"], ["ｳ", "ウ"], ["ｪ", "ェ"], ["ｴ", "エ"], ["ｫ", "ォ"], ["ｵ", "オ"], ["ｶ", "カ"], ["ｶﾞ", "ガ"], ["ｷ", "キ"], ["ｷﾞ", "ギ"], ["ｸ", "ク"], ["ｸﾞ", "グ"], ["ｹ", "ケ"], ["ｹﾞ", "ゲ"], 
+    ["ｺ", "コ"], ["ｺﾞ", "ゴ"], ["ｻ", "サ"], ["ｻﾞ", "ザ"], ["ｼ", "シ"], ["ｼﾞ", "ジ"], ["ｽ", "ス"], ["ｽﾞ", "ズ"], ["ｾ", "セ"], ["ｾﾞ", "ゼ"], ["ｿ", "ソ"], ["ｿﾞ", "ゾ"], ["ﾀ", "タ"], ["ﾀﾞ", "ダ"], ["ﾁ", "チ"], ["ﾁﾞ", "ヂ"], ["ｯ", "ッ"], ["ﾂ", "ツ"], 
+    ["ﾂﾞ", "ヅ"], ["ﾃ", "テ"], ["ﾃﾞ", "デ"], ["ﾄ", "ト"], ["ﾄﾞ", "ド"], ["ﾅ", "ナ"], ["ﾆ", "ニ"], ["ﾇ", "ヌ"], ["ﾈ", "ネ"], ["ﾉ", "ノ"], ["ﾊ", "ハ"], ["ﾊﾞ", "バ"], ["ﾊﾟ", "パ"], ["ﾋ", "ヒ"], ["ﾋﾞ", "ビ"], ["ﾋﾟ", "ピ"], ["ﾌ", "フ"], ["ﾌﾞ", "ブ"], 
+    ["ﾌﾟ", "プ"], ["ﾍ", "ヘ"], ["ﾍﾞ", "ベ"], ["ﾍﾟ", "ペ"], ["ﾎ", "ホ"], ["ﾎﾞ", "ボ"], ["ﾎﾟ", "ポ"], ["ﾏ", "マ"], ["ﾐ", "ミ"], ["ﾑ", "ム"], ["ﾒ", "メ"], ["ﾓ", "モ"], ["ｬ", "ャ"], ["ﾔ", "ヤ"], ["ｭ", "ュ"], ["ﾕ", "ユ"], ["ｮ", "ョ"], ["ﾖ", "ヨ"],
+    ["ﾗ", "ラ"], ["ﾘ", "リ"], ["ﾙ", "ル"], ["ﾚ", "レ"], ["ﾛ", "ロ"], ["ヮ", "ヮ"], ["ﾜ", "ワ"], ["ｦ", "ヲ"], ["ﾝ", "ン"], ["ｳﾞ", "ヴ"], ["｡", "。"], ["ｰ", "ー"], ["｢", "「"], ["｣", "」"], ["､", "、"], ["･", "・"], ["ﾞ", "゛"], ["ﾟ", "゜"]
+  ]);
+
+export const normalize = string => {
+    return string.replace(/\u3000/g,String.fromCharCode(0x0020))
+                 .replace(/\u2018/g,String.fromCharCode(0x0060))
+                 .replace(/\u3008/g,String.fromCharCode(0x003C))
+                 .replace(/\u3009/g,String.fromCharCode(0x003E))
+                 .replace(/\uFFE5/g,String.fromCharCode(0x00A5))
+                 .replace(/\uFFE5/g,String.fromCharCode(0x00A5))
+                 .replace(/[\u00B4\u2019]/g,String.fromCharCode(0x0027))
+                 .replace(/[\u2010-\u2015\u2212\uFF0D]/g,String.fromCharCode(0x002D))
+                 .replace(/[\u201C\u201D]/g,String.fromCharCode(0x0022))
+                 .replace(/[\uFF01\uFF03-\uFF06\uFF08-\uFF5D]/g, function(s) {
+                           return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+                       })
+                 .replace(/([\uFF73\uFF76-\uFF84\uFF8A-\uFF8E]\uFF9E)|([\uFF8A-\uFF8E]\uFF9F)|([\uFF61-\uFF9F])/g, function(s) {
+                           return kanaConvertMap.get(s);
+                       });
+};
+
 export const regexFromFilters = filters => {
   if (filters.size === 0) {
     return null;
   }
 
   return new RegExp(filters.map(filter => {
-    let expr = escapeRegExp(filter.get('phrase'));
+    let expr = escapeRegExp(normalize(filter.get('phrase')));
 
     if (filter.get('whole_word')) {
       if (/^[\w]/.test(expr)) {
@@ -90,7 +116,7 @@ export const makeGetStatus = () => {
       }
 
       const regex     = (accountReblog || accountBase).get('id') !== me && regexFromFilters(filters);
-      const filtered  = regex && regex.test(statusBase.get('reblog') ? statusReblog.get('search_index') : statusBase.get('search_index'));
+      const filtered = regex && regex.test(normalize(statusBase.get('reblog') ? statusReblog.get('search_index') : statusBase.get('search_index')));
 
       return statusBase.withMutations(map => {
         map.set('reblog', statusReblog);
