@@ -18,7 +18,7 @@ class StatusesIndex < Chewy::Index
     },
     tokenizer: {
       ja_tokenizer: {
-        type: 'kuromoji_neologd_tokenizer',
+        type: 'kuromoji_tokenizer',
         mode: 'search',
       },
       ngram_tokenizer: {
@@ -33,17 +33,17 @@ class StatusesIndex < Chewy::Index
     },
     analyzer: {
       content: {
-        tokenizer: 'kuromoji_neologd_tokenizer',
+        tokenizer: 'kuromoji_tokenizer',
         char_filter: %w(
           icu_normalizer
-          kuromoji_neologd_iteration_mark
+          kuromoji_iteration_mark
         ),
         filter: %w(
-          kuromoji_neologd_baseform
-          kuromoji_neologd_part_of_speech
+          kuromoji_baseform
+          kuromoji_part_of_speech
           ja_stop
           kuromoji_number
-          kuromoji_neologd_stemmer
+          kuromoji_stemmer
           icu_normalizer
         ),
       },
