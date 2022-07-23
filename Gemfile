@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '>= 2.6.0', '< 3.1.0'
+ruby '>= 2.6.0', '<= 3.1.2'
 
 gem 'pkg-config', '~> 1.4'
 gem 'rexml', '~> 3.2'
@@ -92,7 +92,7 @@ gem 'twitter-text', '~> 3.1.0'
 gem 'tzinfo-data', '~> 1.2022'
 gem 'webpacker', '~> 5.4'
 gem 'webpush', '~> 0.3'
-gem 'webauthn', '~> 3.0.0.alpha1'
+gem 'webauthn', '~> 2.5.2'
 
 gem 'json-ld'
 gem 'json-ld-preloaded', '~> 3.2'
@@ -153,3 +153,7 @@ gem 'concurrent-ruby', require: false
 gem 'connection_pool', require: false
 
 gem 'xorcist', '~> 1.1'
+gem 'net-smtp', '~> 0.3'
+gem 'net-pop', '~>0.1'
+gem 'net-imap', '~>0.2'
+gem 'psych', '~>3.3'

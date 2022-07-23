@@ -79,7 +79,7 @@ GEM
     attr_encrypted (3.1.0)
       encryptor (~> 3.0.0)
     attr_required (1.0.1)
-    awrence (1.1.1)
+    awrence (1.2.1)
     aws-eventstream (1.2.0)
     aws-partitions (1.587.0)
     aws-sdk-core (3.130.2)
@@ -167,9 +167,9 @@ GEM
     color_diff (0.1)
     concurrent-ruby (1.1.10)
     connection_pool (2.2.5)
-    cose (1.0.0)
+    cose (1.2.1)
       cbor (~> 0.5.9)
-      openssl-signature_algorithm (~> 0.4.0)
+      openssl-signature_algorithm (~> 1.0)
     crack (0.4.5)
       rexml
     crass (1.0.6)
@@ -192,6 +192,7 @@ GEM
       devise (>= 4.0.0)
       rpam2 (~> 4.0)
     diff-lcs (1.5.0)
+    digest (3.1.0)
     discard (1.2.1)
       activerecord (>= 4.2, < 8)
     docile (1.3.4)
@@ -399,9 +400,23 @@ GEM
     msgpack (1.5.1)
     multi_json (1.15.0)
     multipart-post (2.1.1)
+    net-imap (0.2.3)
+      digest
+      net-protocol
+      strscan
     net-ldap (0.17.0)
+    net-pop (0.1.1)
+      digest
+      net-protocol
+      timeout
+    net-protocol (0.1.3)
+      timeout
     net-scp (3.0.0)
       net-ssh (>= 2.6.5, < 7.0.0)
+    net-smtp (0.3.1)
+      digest
+      net-protocol
+      timeout
     net-ssh (6.1.0)
     nio4r (2.5.8)
     nokogiri (1.13.6)
@@ -436,8 +451,9 @@ GEM
       validate_email
       validate_url
       webfinger (>= 1.0.1)
-    openssl (2.2.0)
-    openssl-signature_algorithm (0.4.0)
+    openssl (3.0.0)
+    openssl-signature_algorithm (1.2.1)
+      openssl (> 2.0, < 3.1)
     orm_adapter (0.5.0)
     ox (2.14.11)
     parallel (1.22.1)
@@ -467,6 +483,7 @@ GEM
       pry (~> 0.13.0)
     pry-rails (0.3.9)
       pry (>= 0.10.4)
+    psych (3.3.2)
     public_suffix (4.0.7)
     puma (5.6.4)
       nio4r (~> 2.0)
@@ -598,7 +615,6 @@ GEM
     scenic (1.6.0)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
-    securecompare (1.0.0)
     semantic_range (3.0.0)
     sidekiq (6.4.2)
       connection_pool (>= 2.2.2)
@@ -643,6 +659,7 @@ GEM
     stoplight (3.0.0)
     strong_migrations (0.7.9)
       activerecord (>= 5)
+    strscan (3.0.3)
     swd (1.3.0)
       activesupport (>= 3)
       attr_required (>= 0.0.5)
@@ -654,9 +671,11 @@ GEM
       climate_control (>= 0.0.3, < 1.0)
     thor (1.2.1)
     tilt (2.0.10)
-    tpm-key_attestation (0.9.0)
+    timeout (0.3.0)
+    tpm-key_attestation (0.11.0)
       bindata (~> 2.4)
-      openssl-signature_algorithm (~> 0.4.0)
+      openssl (> 2.0, < 3.1)
+      openssl-signature_algorithm (~> 1.0)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-prompt (0.23.1)
@@ -687,16 +706,15 @@ GEM
       public_suffix
     warden (1.2.9)
       rack (>= 2.0.9)
-    webauthn (3.0.0.alpha1)
+    webauthn (2.5.2)
       android_key_attestation (~> 0.3.0)
       awrence (~> 1.1)
       bindata (~> 2.4)
       cbor (~> 0.5.9)
-      cose (~> 1.0)
-      openssl (~> 2.0)
+      cose (~> 1.1)
+      openssl (>= 2.2, < 3.1)
       safety_net_attestation (~> 0.4.0)
-      securecompare (~> 1.0)
-      tpm-key_attestation (~> 0.9.0)
+      tpm-key_attestation (~> 0.11.0)
     webfinger (1.2.0)
       activesupport
       httpclient (>= 2.4)
@@ -785,7 +803,10 @@ DEPENDENCIES
   memory_profiler
   microformats (~> 4.2)
   mime-types (~> 3.4.1)
+  net-imap (~> 0.2)
   net-ldap (~> 0.17)
+  net-pop (~> 0.1)
+  net-smtp (~> 0.3)
   nokogiri (~> 1.13)
   nsa (~> 0.2)
   oj (~> 3.13)
@@ -803,6 +824,7 @@ DEPENDENCIES
   private_address_check (~> 0.5)
   pry-byebug (~> 3.9)
   pry-rails (~> 0.3)
+  psych (~> 3.3)
   puma (~> 5.6)
   pundit (~> 2.2)
   rack (~> 2.2.3)
@@ -841,8 +863,14 @@ DEPENDENCIES
   tty-prompt (~> 0.23)
   twitter-text (~> 3.1.0)
   tzinfo-data (~> 1.2022)
-  webauthn (~> 3.0.0.alpha1)
+  webauthn (~> 2.5.2)
   webmock (~> 3.14)
   webpacker (~> 5.4)
   webpush (~> 0.3)
   xorcist (~> 1.1)
+
+RUBY VERSION
+   ruby 3.1.2p20
+
+BUNDLED WITH
+   2.3.18
