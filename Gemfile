@@ -155,5 +155,5 @@ gem 'connection_pool', require: false
 gem 'xorcist', '~> 1.1'
 gem 'net-smtp', '~> 0.3'
 gem 'net-pop', '~>0.1'
-gem 'net-imap', '~>0.2'
+gem 'net-imap', '~>0.3'
 gem 'psych', '~>3.3'
